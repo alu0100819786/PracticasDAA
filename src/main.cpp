@@ -12,6 +12,9 @@ void help();
 long getCurrentTime();
 std::string deleteWhiteSpacesSurround(std::string str);
 
+void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
+bool isZeroVector(std::vector<int> array);
+
 int main(int argc, char *argv[]) {
   int n_customers = 0;
   int n_vehicles = 0;
@@ -78,6 +81,8 @@ int main(int argc, char *argv[]) {
     }
     std::cout << std::endl;
   }*/
+
+Greedy(n_customers, n_vehicles, matrix);
 };
 
 void help() {
@@ -103,6 +108,114 @@ std::string deleteWhiteSpacesSurround(std::string str) {
     }
   }
   return str;
+}
+
+
+void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz){
+  int minimo = 999999;
+  int elemento = 0;
+  int contador = 0;
+  int contruta = 0;
+  int size_route = 0;
+  std::vector<int> rutaParcial;
+  std::vector<int> valorParcial;
+  std::vector<int> rutafinal;
+  rutafinal.push_back(0);
+  int distancia = 0;
+  int distanciaTotal = 0;
+
+  if (customers % vehicles == 0){
+      size_route = customers/vehicles;
+  }
+  else{
+      size_route = customers / vehicles + 1;
+  }
+
+  for(int i = 0; i < matriz.size(); i++){
+        for (int j = 0; j < matriz.size(); j++){
+
+            std::cout << matriz[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+for(int i = 0; i < matriz.size(); i++){
+        for (int j = 1; j < matriz.size(); j++){
+          if(isZeroVector(matriz[i]) == true){
+            elemento = 0;
+            minimo = matriz[i][elemento];
+            contador = size_route -1;
+          }else{
+            if(minimo > matriz[i][j] && matriz[i][j] != 0){
+                minimo = matriz[i][j];
+                elemento = j;
+            }
+          }
+        }
+        minimo = 999999;
+
+        std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matriz[i][elemento] << std::endl;
+        rutaParcial.push_back(elemento);
+        valorParcial.push_back(matriz[i][elemento]);
+        i = elemento -1;
+        for (int k = 0; k <matriz.size(); k++){
+            matriz[k][elemento] = 0;
+        }
+        contador++;
+        std::cout << std::endl;
+
+        for(int i = 0; i < matriz.size(); i++){
+          for (int j = 0; j < matriz.size(); j++){
+
+            std::cout << matriz[i][j] << " ";
+          }
+        std::cout << std::endl;
+        }
+        if(contador == size_route){
+            i = -1;
+            rutaParcial.push_back(0);
+            valorParcial.push_back(matriz[elemento][0]);
+            std::cout << "La mejor ruta es: " << std::endl;
+            for(int n = 0; n < size_route + 1; n++){
+
+                std::cout << rutaParcial[n] << " --> ";
+                std::cout << valorParcial[n] << std::endl;
+                rutafinal.push_back(rutaParcial[n]);
+                distancia += valorParcial[n];
+            }
+            std::cout << std::endl;
+            std::cout << "Distancia ruta: " << distancia << std::endl;
+            rutaParcial.clear();
+            valorParcial.clear();
+            distanciaTotal += distancia;
+            distancia = 0;
+            contador = 0;
+            
+            contruta++;
+            if (contruta == vehicles){
+            std::cout << std::endl;
+            std::cout << "Distancia total: " << distanciaTotal << std::endl;
+            std::cout << " --------------" << std::endl;
+            for(int z = 0; z < rutafinal.size(); z++){
+                std::cout << rutafinal[z] << "\t";
+            }
+                std::cout << std::endl;
+                exit(0);
+            }
+            
+        }
+}
+
+
+}
+
+bool isZeroVector(std::vector<int> array) {
+          for (int i = 1; i < array.size(); i++) {
+          if (array[i] != 0) {
+            return false;
+          }
+        }
+        return true;
 }
 
 #endif
