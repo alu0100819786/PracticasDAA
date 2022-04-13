@@ -1,5 +1,5 @@
 # Diseño y analisis de algoritmos
-# Practica 7
+## Practica 7
 
 This directory is organised as follows:
 
