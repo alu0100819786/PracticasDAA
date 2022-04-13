@@ -13,6 +13,7 @@ long getCurrentTime();
 std::string deleteWhiteSpacesSurround(std::string str);
 
 void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
+void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
 bool isZeroVector(std::vector<int> array);
 
 int main(int argc, char *argv[]) {
@@ -217,5 +218,27 @@ bool isZeroVector(std::vector<int> array) {
         }
         return true;
 }
+
+
+void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz){
+
+int RLCSize, iterations, noImprove, aux;
+
+std::cout << "Introduzca el número de iteraciones que quiere llevar a cabo con el algoritmo Grasp: " << std::endl;
+std::cin >> aux;
+iterations = aux;
+std::cout << iterations;
+std::cout << "Introduzca el tamaño deseado para la RLC: " << std::endl;
+std::cin >> aux;
+RLCSize = aux;
+std::cout << RLCSize;
+std::cout << "Introduzca el número de iteraciones antes de parar la ejecución, sin que se encuentre una solución mejor que la guardada" << std::endl;
+std::cin >> aux;
+noImprove = aux;
+std::cout << noImprove;
+
+
+}
+
 
 #endif
