@@ -103,7 +103,6 @@ void help() {
 	std::cout << "./vrp <input-file-name>" << std::endl;
 }
 
-
 bool isGreedy() {
   std::string inputString = "";
 	while (true) {
