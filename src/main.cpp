@@ -15,6 +15,8 @@ std::string deleteWhiteSpacesSurround(std::string str);
 void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
 void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
 bool isZeroVector(std::vector<int> array);
+bool isInVector(int number, std::vector<int> vector);
+void generateRLC(std::vector<int> RLC, std::vector<int> fila, int size_RLC);
 
 int main(int argc, char *argv[]) {
   int n_customers = 0;
@@ -83,7 +85,7 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
   }*/
 
-Greedy(n_customers, n_vehicles, matrix);
+Grasp(n_customers, n_vehicles, matrix);
 };
 
 void help() {
@@ -227,17 +229,54 @@ int RLCSize, iterations, noImprove, aux;
 std::cout << "Introduzca el número de iteraciones que quiere llevar a cabo con el algoritmo Grasp: " << std::endl;
 std::cin >> aux;
 iterations = aux;
-std::cout << iterations;
 std::cout << "Introduzca el tamaño deseado para la RLC: " << std::endl;
 std::cin >> aux;
 RLCSize = aux;
-std::cout << RLCSize;
 std::cout << "Introduzca el número de iteraciones antes de parar la ejecución, sin que se encuentre una solución mejor que la guardada" << std::endl;
 std::cin >> aux;
 noImprove = aux;
-std::cout << noImprove;
+std::vector<int> RLCprueba;
+std::vector<int> inRLC;
+generateRLC(RLCprueba,matriz[0],RLCSize);
+for(int i = 0; i < matriz.size(); i++){
+        for (int j = 1; j < matriz.size(); j++){
+            
+}
+}
+}
 
 
+bool isInVector(int number, std::vector<int> vector){
+  for (int i = 0; i < vector.size(); i++){
+    if(vector[i] == number){
+      return true;
+    }
+  }
+  return false;
+}
+
+void generateRLC(std::vector<int> RLC, std::vector<int> fila, int size_RLC){
+std::vector<int> tempRLC;
+int minimo = 999999;
+int elemento;
+for(int z = 0; z < size_RLC ; z++){
+for (int i = 0; i < fila.size(); i++){
+    if(minimo > fila[i] && fila[i] !=0){
+      minimo = fila[i];
+      elemento = i;
+    }
+}
+fila[elemento] = 0;
+if(tempRLC.size() < size_RLC){
+  tempRLC.push_back(minimo);
+}
+minimo = 999999;
+}
+
+std::cout << "RLC: ";
+for(int j = 0; j < tempRLC.size(); j++){
+  std::cout << tempRLC[j] << " ";
+}
 }
 
 
