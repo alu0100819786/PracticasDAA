@@ -7,6 +7,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <ctime>
+#include <cmath>
 
 void help();
 long getCurrentTime();
@@ -277,7 +279,7 @@ std::cout << "RLC: ";
 for(int j = 0; j < tempRLC.size(); j++){
   std::cout << tempRLC[j] << " ";
 }
-
+srand(time(NULL));
 int ind = rand()%tempRLC.size();
 
 std::cout << ind << std::endl;
