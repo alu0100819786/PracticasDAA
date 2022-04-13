@@ -256,7 +256,7 @@ std::vector<int> rutaParcial;
 std::vector<int> valorParcial; //Quitarlo, meterlo directamente en distancia
 std::vector<int> rutafinal;
 std::vector<int> rutaSolucion;
-rutafinal.push_back(0);
+
 int distancia = 0;
 int distanciaTotal = 0;
 int mejorDistancia = 9999999;
@@ -265,6 +265,7 @@ int contadorNoImprove = 0;
 
 while((contadorIteraciones < iterations) && (contadorNoImprove != noImprove)){
 matrix = matriz;
+rutafinal.push_back(0);
 for(int i = 0; i < matrix.size(); i++){
         for (int j = 1; j < matrix.size(); j++){
           if(isZeroVector(matrix[i]) == true){
@@ -281,7 +282,7 @@ for(int i = 0; i < matrix.size(); i++){
         minimo = 999999;
         RLCRuta.clear();
         RLCValor.clear();
-        std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matrix[i][elemento] << std::endl;
+        //std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matrix[i][elemento] << std::endl;
         rutaParcial.push_back(elemento);
         valorParcial.push_back(matrix[i][elemento]);
         i = elemento -1;
@@ -327,7 +328,9 @@ for(int i = 0; i < matrix.size(); i++){
               contadorNoImprove++;
             }
             std::cout << std::endl;
-            std::cout << "Mejor Distancia Final: " << mejorDistancia << std::endl;
+            std::cout << "Mejor Distancia Final: " <<std::endl << mejorDistancia << std::endl;
+            std::cout << " --------------" << std::endl;
+            std::cout << "Mejor Ruta Final: " << std::endl;
             std::cout << " --------------" << std::endl;
             for(int c = 0; c < rutaSolucion.size(); c++){
                 std::cout << rutaSolucion[c] << "\t";
@@ -365,16 +368,16 @@ if(RLCR.size() < size_RLC){
   }
 }
 
-std::cout << "RLC: ";
-for(int j = 0; j < RLCR.size(); j++){
-  std::cout << RLCR[j] << " ";
-}
-std::cout << std::endl;
+//std::cout << "RLC: ";
+//for(int j = 0; j < RLCR.size(); j++){
+  //std::cout << RLCR[j] << " ";
+//}
+//std::cout << std::endl;
 
 
 int ind = rand()%RLCR.size();
-std::cout << ind << std::endl;
-std::cout << RLCV[ind] << std::endl;
+//std::cout << ind << std::endl;
+//std::cout << RLCV[ind] << std::endl;
 }
 
 
