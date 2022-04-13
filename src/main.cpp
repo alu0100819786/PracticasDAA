@@ -230,6 +230,7 @@ int RLCSize, iterations, noImprove, aux;
 int elemento = 0;
 int minimo = 999999;
 int contador = 0;
+int contruta = 0;
 int size_route = 0;
 int ind = 0;
 if (customers % vehicles == 0){
@@ -250,49 +251,74 @@ std::cin >> aux;
 noImprove = aux;
 std::vector<int> RLCRuta;
 std::vector<int> RLCValor;
-/*generateRLC(RLCRuta,RLCValor,matriz[0],RLCSize);
-            srand(time(NULL));
-            ind = rand()%RLCRuta.size();
-            elemento = ind;
-            
-            //minimo =;
-            std::cout << "RLC: ";
-            for(int k = 0; k < RLCRuta.size(); k++){
-              std::cout << RLCRuta[k] << " ";
-            }
-            std::cout << "Posicion: " << elemento << ", valor: " << RLCValor[elemento] << std::endl;
-*/
+std::vector<int> rutaParcial;
+std::vector<int> valorParcial; //Quitarlo, meterlo directamente en distancia
+std::vector<int> rutafinal;
+rutafinal.push_back(0);
+int distancia = 0;
+int distanciaTotal = 0;
+
 for(int i = 0; i < matriz.size(); i++){
         for (int j = 1; j < matriz.size(); j++){
-         /* if(isZeroVector(matriz[i]) == true){
+          if(isZeroVector(matriz[i]) == true){
+              std::cout << "pepe" << std::endl;
               elemento = 0;
               minimo = matriz[i][elemento];
               contador = size_route -1;
           }else{
-            generateRLC(RLCprueba,matriz[0],RLCSize);
+            generateRLC(RLCRuta,RLCValor,matriz[i],RLCSize);
             srand(time(NULL));
-            ind = rand()%RLCprueba.size();
-            elemento = ind;
-            minimo =;
-            std::cout << "RLC: ";
-            for(int k = 0; k < RLCprueba.size(); k++){
-              std::cout << RLCprueba[k] << " ";
+            ind = rand()%RLCRuta.size();
+            elemento = RLCRuta[ind];//pillamos vecino
+            minimo = RLCValor[ind];//Pillamos valor de distancia
+          }
+        }
+        minimo = 999999;
+        RLCRuta.clear();
+        RLCValor.clear();
+        std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matriz[i][elemento] << std::endl;
+        rutaParcial.push_back(elemento);
+        valorParcial.push_back(matriz[i][elemento]);
+        i = elemento -1;
+        for (int k = 0; k <matriz.size(); k++){
+            matriz[k][elemento] = 0;
+        }
+        contador++;
+        std::cout << std::endl;
+        if(contador == size_route){
+            i = -1;
+            rutaParcial.push_back(0);
+            valorParcial.push_back(matriz[elemento][0]);
+            std::cout << "La mejor ruta es: " << std::endl;
+            for(int n = 0; n < size_route + 1; n++){
+
+                std::cout << rutaParcial[n] << " --> ";
+                std::cout << valorParcial[n] << std::endl;
+                rutafinal.push_back(rutaParcial[n]);
+                distancia += valorParcial[n];
             }
-          }*/
-            
-}
+            std::cout << std::endl;
+            std::cout << "Distancia ruta: " << distancia << std::endl;
+            rutaParcial.clear();
+            valorParcial.clear();
+            distanciaTotal += distancia;
+            distancia = 0;
+            contador = 0;
+            contruta++;
+            if (contruta == vehicles){
+            std::cout << std::endl;
+            std::cout << "Distancia total: " << distanciaTotal << std::endl;
+            std::cout << " --------------" << std::endl;
+            for(int z = 0; z < rutafinal.size(); z++){
+                std::cout << rutafinal[z] << "\t";
+            }
+                std::cout << std::endl;
+                exit(0);
+            }
+        }
 }
 }
 
-
-/*bool isInVector(int number, std::vector<int> vector){
-  for (int i = 0; i < vector.size(); i++){
-    if(vector[i] == number){
-      return true;
-    }
-  }
-  return false;
-}*/
 
 void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC){
 
@@ -300,7 +326,7 @@ std::vector<int> matrix = fila;
 int minimo = 999999;
 int elemento;
 for(int z = 0; z < size_RLC ; z++){
-for (int i = 0; i < matrix.size(); i++){
+for (int i = 1; i < matrix.size(); i++){
     if(minimo > matrix[i] && matrix[i] !=0){
       minimo = matrix[i];
       elemento = i;
@@ -318,11 +344,13 @@ std::cout << "RLC: ";
 for(int j = 0; j < RLCR.size(); j++){
   std::cout << RLCR[j] << " ";
 }
+std::cout << std::endl;
+
 srand(time(NULL));
 int ind = rand()%RLCR.size();
 
 std::cout << ind << std::endl;
-std::cout << RLCR[ind] << std::endl;
+std::cout << RLCV[ind] << std::endl;
 }
 
 
