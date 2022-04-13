@@ -18,7 +18,7 @@ void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
 void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
 bool isZeroVector(std::vector<int> array);
 bool isInVector(int number, std::vector<int> vector);
-void generateRLC(std::vector<int> RLC, std::vector<int> fila, int size_RLC);
+void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC);
 
 int main(int argc, char *argv[]) {
   int n_customers = 0;
@@ -227,6 +227,17 @@ bool isZeroVector(std::vector<int> array) {
 void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz){
 
 int RLCSize, iterations, noImprove, aux;
+int elemento = 0;
+int minimo = 999999;
+int contador = 0;
+int size_route = 0;
+int ind = 0;
+if (customers % vehicles == 0){
+      size_route = customers/vehicles;
+  }
+  else{
+      size_route = customers / vehicles + 1;
+  }
 
 std::cout << "Introduzca el número de iteraciones que quiere llevar a cabo con el algoritmo Grasp: " << std::endl;
 std::cin >> aux;
@@ -237,53 +248,81 @@ RLCSize = aux;
 std::cout << "Introduzca el número de iteraciones antes de parar la ejecución, sin que se encuentre una solución mejor que la guardada" << std::endl;
 std::cin >> aux;
 noImprove = aux;
-std::vector<int> RLCprueba;
-std::vector<int> inRLC;
-generateRLC(RLCprueba,matriz[0],RLCSize);
+std::vector<int> RLCRuta;
+std::vector<int> RLCValor;
+/*generateRLC(RLCRuta,RLCValor,matriz[0],RLCSize);
+            srand(time(NULL));
+            ind = rand()%RLCRuta.size();
+            elemento = ind;
+            
+            //minimo =;
+            std::cout << "RLC: ";
+            for(int k = 0; k < RLCRuta.size(); k++){
+              std::cout << RLCRuta[k] << " ";
+            }
+            std::cout << "Posicion: " << elemento << ", valor: " << RLCValor[elemento] << std::endl;
+*/
 for(int i = 0; i < matriz.size(); i++){
         for (int j = 1; j < matriz.size(); j++){
+         /* if(isZeroVector(matriz[i]) == true){
+              elemento = 0;
+              minimo = matriz[i][elemento];
+              contador = size_route -1;
+          }else{
+            generateRLC(RLCprueba,matriz[0],RLCSize);
+            srand(time(NULL));
+            ind = rand()%RLCprueba.size();
+            elemento = ind;
+            minimo =;
+            std::cout << "RLC: ";
+            for(int k = 0; k < RLCprueba.size(); k++){
+              std::cout << RLCprueba[k] << " ";
+            }
+          }*/
             
 }
 }
 }
 
 
-bool isInVector(int number, std::vector<int> vector){
+/*bool isInVector(int number, std::vector<int> vector){
   for (int i = 0; i < vector.size(); i++){
     if(vector[i] == number){
       return true;
     }
   }
   return false;
-}
+}*/
 
-void generateRLC(std::vector<int> RLC, std::vector<int> fila, int size_RLC){
-std::vector<int> tempRLC;
+void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC){
+
+std::vector<int> matrix = fila;
 int minimo = 999999;
 int elemento;
 for(int z = 0; z < size_RLC ; z++){
-for (int i = 0; i < fila.size(); i++){
-    if(minimo > fila[i] && fila[i] !=0){
-      minimo = fila[i];
+for (int i = 0; i < matrix.size(); i++){
+    if(minimo > matrix[i] && matrix[i] !=0){
+      minimo = matrix[i];
       elemento = i;
     }
 }
-fila[elemento] = 0;
-if(tempRLC.size() < size_RLC){
-  tempRLC.push_back(minimo);
-}
+matrix[elemento] = 0;
+if(RLCR.size() < size_RLC){
+  RLCR.push_back(elemento);
+  RLCV.push_back(minimo);
+  }
 minimo = 999999;
 }
 
 std::cout << "RLC: ";
-for(int j = 0; j < tempRLC.size(); j++){
-  std::cout << tempRLC[j] << " ";
+for(int j = 0; j < RLCR.size(); j++){
+  std::cout << RLCR[j] << " ";
 }
 srand(time(NULL));
-int ind = rand()%tempRLC.size();
+int ind = rand()%RLCR.size();
 
 std::cout << ind << std::endl;
-std::cout << tempRLC[ind] << std::endl;
+std::cout << RLCR[ind] << std::endl;
 }
 
 
