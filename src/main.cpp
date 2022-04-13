@@ -277,6 +277,11 @@ std::cout << "RLC: ";
 for(int j = 0; j < tempRLC.size(); j++){
   std::cout << tempRLC[j] << " ";
 }
+
+int ind = rand()%tempRLC.size();
+
+std::cout << ind << std::endl;
+std::cout << tempRLC[ind] << std::endl;
 }
 
 
