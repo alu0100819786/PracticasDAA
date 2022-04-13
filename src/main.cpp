@@ -11,13 +11,15 @@
 #include <cmath>
 
 void help();
+bool isGreedy();
 long getCurrentTime();
-std::string deleteWhiteSpacesSurround(std::string str);
-
-void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
-void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz);
+int askForRLCVectorSize();
+int askForNumberIterations();
+int askForTimesTryingImprove();
 bool isZeroVector(std::vector<int> array);
-bool isInVector(int number, std::vector<int> vector);
+std::string deleteWhiteSpacesSurround(std::string str);
+void Greedy(int customers, int vehicles, std::vector<std::vector<int> > matriz);
+void Grasp (int customers, int vehicles, std::vector<std::vector<int> > matriz);
 void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC);
 
 int main(int argc, char *argv[]) {
@@ -80,14 +82,19 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  /*for (int i = 0; i < matrix.size(); i++) {
-    for (int j = 0; j < matrix[i].size(); j++) {
-      std::cout << matrix[i][j] << " ";
-    }
-    std::cout << std::endl;
-  }*/
+  long start, end, total;
 
-Grasp(n_customers, n_vehicles, matrix);
+  if (isGreedy()) {
+    start = getCurrentTime();
+    Greedy(n_customers, n_vehicles, matrix);
+    end = getCurrentTime();
+  } else {
+    start = getCurrentTime();
+    Grasp(n_customers, n_vehicles, matrix);
+    end = getCurrentTime();
+  }
+
+  total = end - start;
 };
 
 void help() {
@@ -96,10 +103,78 @@ void help() {
 	std::cout << "./vrp <input-file-name>" << std::endl;
 }
 
+
+bool isGreedy() {
+  std::string inputString = "";
+	while (true) {
+		std::cout << "¿Desea ejecutar el algoritmo greedy (si/no)?: " << std::endl << "\t>> ";
+		std::cin >> inputString;
+		if ((inputString == "si") || (inputString == "SI") || (inputString == "Si")) {
+			return true;
+		} else if ((inputString == "no") || (inputString == "NO") || (inputString == "No")) {
+      return false;
+    } else {
+			std::cout << std::endl << "Elija una opcion correcta." << std::endl << std::endl;
+			inputString = "";
+		}
+	}
+}
+
 long getCurrentTime() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
-  return (tv.tv_sec * 1000000) + tv.tv_usec;
+  return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+int askForRLCVectorSize() {
+  std::string inputString = "";
+	while (true) {
+		std::cout << "Introduzca el tamaño deseado para la RLC: " << std::endl << "\t>> ";
+		std::cin >> inputString;
+		if (inputString.find_first_not_of("0123456789") == std::string::npos) {
+			return stoi(inputString);
+		} else {
+			std::cout << std::endl << "Elija un numero entero." << std::endl << std::endl;
+			inputString = "";
+		}
+	}
+}
+
+int askForNumberIterations() {
+	std::string inputString = "";
+	while (true) {
+		std::cout << "Introduzca el número de iteraciones que quiere llevar a cabo con el algoritmo Grasp: " << std::endl << "\t>> ";
+		std::cin >> inputString;
+		if (inputString.find_first_not_of("0123456789") == std::string::npos) {
+			return stoi(inputString);
+		} else {
+			std::cout << std::endl << "Elija un numero entero." << std::endl << std::endl;
+			inputString = "";
+		}
+	}
+}
+
+int askForTimesTryingImprove() {
+  std::string inputString = "";
+	while (true) {
+		std::cout << "Introduzca el número de iteraciones antes de parar la ejecución, sin que se encuentre una solución mejor que la guardada: " << std::endl << "\t>> ";
+		std::cin >> inputString;
+		if (inputString.find_first_not_of("0123456789") == std::string::npos) {
+			return stoi(inputString);
+		} else {
+			std::cout << std::endl << "Elija un numero entero." << std::endl << std::endl;
+			inputString = "";
+		}
+	}
+}
+
+bool isZeroVector(std::vector<int> array) {
+  for (int i = 1; i < array.size(); i++) {
+    if (array[i] != 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
 std::string deleteWhiteSpacesSurround(std::string str) {
@@ -115,270 +190,229 @@ std::string deleteWhiteSpacesSurround(std::string str) {
   return str;
 }
 
-
-void Greedy(int customers, int vehicles ,std::vector<std::vector<int>> matriz){
-  int minimo = 999999;
-  int elemento = 0;
-  int contador = 0;
-  int contruta = 0;
+void Greedy(int customers, int vehicles ,std::vector<std::vector<int> > matriz) {
   int size_route = 0;
+  if ((customers % vehicles) == 0) {
+    size_route = customers / vehicles;
+  } else {
+    size_route = customers / vehicles + 1;
+  }
+
+  /*for (int i = 0; i < matriz.size(); i++) {
+    for (int j = 0; j < matriz.size(); j++) {
+      std::cout << matriz[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }*/
+
+  int contruta = 0;
+  int contador = 0;//Quizas se puede quitar y reemplazar por el tamaño del vector ruta parcial
+  int distanciaTotal = 0;
   std::vector<int> rutaParcial;
   std::vector<int> valorParcial;
-  std::vector<int> rutafinal;
-  rutafinal.push_back(0);
-  int distancia = 0;
+  std::vector<int> rutafinal(1,0);
+  for (int i = 0; i < matriz.size(); i++) {
+    int elemento = 0;
+    int minimo = 999999;
+    for (int j = 1; j < matriz.size(); j++) {
+      if (isZeroVector(matriz[i]) == true) {
+        elemento = 0;
+        minimo = matriz[i][elemento];
+        contador = size_route - 1;
+      } else if (minimo > matriz[i][j] && matriz[i][j] != 0) {
+        elemento = j;
+        minimo = matriz[i][j];
+      }
+    }
+
+    //std::cout << "El menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matriz[i][elemento] << std::endl;
+
+    for (int j = 0; j < matriz.size(); j++) {
+      matriz[j][elemento] = 0;
+    }
+
+    valorParcial.push_back(matriz[i][elemento]);
+    rutaParcial.push_back(elemento);
+    i = elemento - 1;
+    contador++;//
+
+    /*std::cout << std::endl;
+    for (int j = 0; j < matriz.size(); j++) {
+      for (int k = 0; k < matriz.size(); k++) {
+        std::cout << matriz[j][k] << " ";
+      }
+      std::cout << std::endl;
+    }*/
+
+    if (contador == size_route) {//
+      i = -1;
+      rutaParcial.push_back(0);
+      valorParcial.push_back(matriz[elemento][0]);
+
+      int distancia = 0;
+      //std::cout << "La mejor ruta es: " << std::endl;
+      for (int j = 0; j < size_route + 1; j++) {
+        //std::cout << rutaParcial[j] << " --> " << valorParcial[j] << std::endl;
+        rutafinal.push_back(rutaParcial[j]);
+        distancia += valorParcial[j];
+      }
+      //std::cout << std::endl << "Distancia ruta: " << distancia << std::endl;
+
+      contruta++;
+      rutaParcial.clear();
+      valorParcial.clear();
+      distanciaTotal += distancia;
+
+      contador = 0;//
+
+      if (contruta == vehicles) {
+        std::cout << std::endl << "Distancia total: " << distanciaTotal << std::endl << " --------------" << std::endl << "Ruta: ";
+        for (int j = 0; j < rutafinal.size(); j++){
+          std::cout << rutafinal[j] << " ";
+        }
+        std::cout << std::endl;
+        exit(0);
+      }
+    }
+  }
+}
+
+void Grasp(int customers, int vehicles ,std::vector<std::vector<int> > matriz){
+  srand(time(NULL));
+  int size_route = 0;
+  if ((customers % vehicles) == 0){
+    size_route = customers / vehicles;
+  } else {
+    size_route = customers / vehicles + 1;
+  }
+
+  int iterations = askForNumberIterations();
+  int RLCSize = askForRLCVectorSize();
+  int noImprove = askForTimesTryingImprove();
+  
+  std::vector<int> valorParcial;
+  std::vector<int> rutaSolucion;
+  std::vector<int> rutaParcial;
+  int mejorDistancia = 9999999;
+  int contadorIteraciones = 0;
+  int contadorNoImprove = 0;
   int distanciaTotal = 0;
-
-  if (customers % vehicles == 0){
-      size_route = customers/vehicles;
-  }
-  else{
-      size_route = customers / vehicles + 1;
-  }
-
-  for(int i = 0; i < matriz.size(); i++){
-        for (int j = 0; j < matriz.size(); j++){
-
-            std::cout << matriz[i][j] << " ";
+  int contruta = 0;
+  int contador = 0;//Quizas se puede quitar y reemplazar por el tamaño del vector ruta parcial
+  while ((contadorIteraciones < iterations) && (contadorNoImprove != noImprove)) {
+    std::vector<std::vector<int> > matrix = matriz;
+    std::vector<int> rutafinal(1,0);
+    for (int i = 0; i < matrix.size(); i++) {
+      std::vector<int> RLCValor;
+      std::vector<int> RLCRuta;
+      int minimo = 999999;
+      int elemento = 0;
+      int ind = 0;
+      for (int j = 1; j < matrix.size(); j++) {
+        if (isZeroVector(matrix[i]) == true) {
+          elemento = 0;
+          minimo = matrix[i][elemento];
+          contador = size_route - 1;
+        } else {
+          generateRLC(RLCRuta, RLCValor, matrix[i], RLCSize);
+          elemento = RLCRuta[ind];
+          minimo = RLCValor[ind];
+          ind = rand() % RLCRuta.size();
         }
-        std::cout << std::endl;
+      }
+      
+      //std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matrix[i][elemento] << std::endl;
+      
+      for (int j = 0; j <matrix.size(); j++){
+        matrix[j][elemento] = 0;
+      }
+      
+      valorParcial.push_back(matrix[i][elemento]);
+      rutaParcial.push_back(elemento);
+      i = elemento -1;
+      contador++;//
+      
+      //std::cout << std::endl;
+      if (contador == size_route) {//
+        i = -1;
+        rutaParcial.push_back(0);
+        valorParcial.push_back(matrix[elemento][0]);
+
+        int distancia = 0;
+        //std::cout << "La mejor ruta es: " << std::endl;
+        for (int j = 0; j < size_route + 1; j++) {
+          //std::cout << rutaParcial[j] << " --> " << valorParcial[j] << std::endl;
+          rutafinal.push_back(rutaParcial[j]);
+          distancia += valorParcial[j];
+        }
+        //std::cout << std::endl << "Distancia ruta: " << distancia << std::endl;
+
+        distanciaTotal += distancia;
+        valorParcial.clear();
+        rutaParcial.clear();
+        contador = 0;//
+        contruta++;
+
+        if (contruta == vehicles) {
+          /*std::cout << std::endl << "Distancia total: " << distanciaTotal << std::endl << " --------------" << std::endl;
+          for (int j = 0; j < rutafinal.size(); j++) {
+            std::cout << rutafinal[j] << "\t";
+          }*/
+
+          if (mejorDistancia > distanciaTotal) {
+            mejorDistancia = distanciaTotal;
+            rutaSolucion = rutafinal;
+            contadorNoImprove = 0;
+            distanciaTotal = 0;
+            rutafinal.clear();
+          } else {
+            contadorNoImprove++;
+          }
+
+          contadorIteraciones++;
+          matrix.clear();
+          contruta = 0;
+          break;
+        }
+      }
+    }
+  }
+  std::cout << std::endl << "Mejor Distancia Final: " << mejorDistancia << std::endl << " --------------";//Lo pongo por fuera del while para que cuando acabe muertre la mejor solo 1 vez
+  std::cout << std::endl << "Mejor Ruta Final: " ;
+  for (int i = 0; i < rutaSolucion.size(); i++) {
+    std::cout << rutaSolucion[i] << " ";
+  }
+  std::cout << std::endl;
+}
+
+void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC) {
+  int elemento;
+  std::vector<int> matrix = fila;
+  for (int i = 0; i < size_RLC; i++) {
+    int minimo = 999999;
+    for (int j = 1; j < matrix.size(); j++) {
+      if ((minimo > matrix[j]) && (matrix[j] != 0)) {
+        elemento = j;
+        minimo = matrix[j];
+      }
     }
 
-for(int i = 0; i < matriz.size(); i++){
-        for (int j = 1; j < matriz.size(); j++){
-          if(isZeroVector(matriz[i]) == true){
-            elemento = 0;
-            minimo = matriz[i][elemento];
-            contador = size_route -1;
-          }else{
-            if(minimo > matriz[i][j] && matriz[i][j] != 0){
-                minimo = matriz[i][j];
-                elemento = j;
-            }
-          }
-        }
-        minimo = 999999;
-
-        std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matriz[i][elemento] << std::endl;
-        rutaParcial.push_back(elemento);
-        valorParcial.push_back(matriz[i][elemento]);
-        i = elemento -1;
-        for (int k = 0; k <matriz.size(); k++){
-            matriz[k][elemento] = 0;
-        }
-        contador++;
-        std::cout << std::endl;
-
-        for(int i = 0; i < matriz.size(); i++){
-          for (int j = 0; j < matriz.size(); j++){
-
-            std::cout << matriz[i][j] << " ";
-          }
-        std::cout << std::endl;
-        }
-        if(contador == size_route){
-            i = -1;
-            rutaParcial.push_back(0);
-            valorParcial.push_back(matriz[elemento][0]);
-            std::cout << "La mejor ruta es: " << std::endl;
-            for(int n = 0; n < size_route + 1; n++){
-
-                std::cout << rutaParcial[n] << " --> ";
-                std::cout << valorParcial[n] << std::endl;
-                rutafinal.push_back(rutaParcial[n]);
-                distancia += valorParcial[n];
-            }
-            std::cout << std::endl;
-            std::cout << "Distancia ruta: " << distancia << std::endl;
-            rutaParcial.clear();
-            valorParcial.clear();
-            distanciaTotal += distancia;
-            distancia = 0;
-            contador = 0;
-            
-            contruta++;
-            if (contruta == vehicles){
-            std::cout << std::endl;
-            std::cout << "Distancia total: " << distanciaTotal << std::endl;
-            std::cout << " --------------" << std::endl;
-            for(int z = 0; z < rutafinal.size(); z++){
-                std::cout << rutafinal[z] << "\t";
-            }
-                std::cout << std::endl;
-                exit(0);
-            }
-            
-        }
-}
-
-
-}
-
-bool isZeroVector(std::vector<int> array) {
-          for (int i = 1; i < array.size(); i++) {
-          if (array[i] != 0) {
-            return false;
-          }
-        }
-        return true;
-}
-
-
-void Grasp(int customers, int vehicles ,std::vector<std::vector<int>> matriz){
-srand(time(NULL));
-std::vector<std::vector<int>> matrix;
-int RLCSize, iterations, noImprove, aux;
-int elemento = 0;
-int minimo = 999999;
-int contador = 0;
-int contruta = 0;
-int size_route = 0;
-int ind = 0;
-if (customers % vehicles == 0){
-      size_route = customers/vehicles;
-  }
-  else{
-      size_route = customers / vehicles + 1;
-  }
-
-std::cout << "Introduzca el número de iteraciones que quiere llevar a cabo con el algoritmo Grasp: " << std::endl;
-std::cin >> aux;
-iterations = aux;
-std::cout << "Introduzca el tamaño deseado para la RLC: " << std::endl;
-std::cin >> aux;
-RLCSize = aux;
-std::cout << "Introduzca el número de iteraciones antes de parar la ejecución, sin que se encuentre una solución mejor que la guardada" << std::endl;
-std::cin >> aux;
-noImprove = aux;
-std::vector<int> RLCRuta;
-std::vector<int> RLCValor;
-std::vector<int> rutaParcial;
-std::vector<int> valorParcial; //Quitarlo, meterlo directamente en distancia
-std::vector<int> rutafinal;
-std::vector<int> rutaSolucion;
-
-int distancia = 0;
-int distanciaTotal = 0;
-int mejorDistancia = 9999999;
-int contadorIteraciones = 0;
-int contadorNoImprove = 0;
-
-while((contadorIteraciones < iterations) && (contadorNoImprove != noImprove)){
-matrix = matriz;
-rutafinal.push_back(0);
-for(int i = 0; i < matrix.size(); i++){
-        for (int j = 1; j < matrix.size(); j++){
-          if(isZeroVector(matrix[i]) == true){
-              elemento = 0;
-              minimo = matrix[i][elemento];
-              contador = size_route -1;
-          }else{
-            generateRLC(RLCRuta,RLCValor,matrix[i],RLCSize);
-            ind = rand()%RLCRuta.size();
-            elemento = RLCRuta[ind];//pillamos vecino
-            minimo = RLCValor[ind];//Pillamos valor de distancia
-          }
-        }
-        minimo = 999999;
-        RLCRuta.clear();
-        RLCValor.clear();
-        //std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matrix[i][elemento] << std::endl;
-        rutaParcial.push_back(elemento);
-        valorParcial.push_back(matrix[i][elemento]);
-        i = elemento -1;
-        for (int k = 0; k <matrix.size(); k++){
-            matrix[k][elemento] = 0;
-        }
-        contador++;
-        std::cout << std::endl;
-        if(contador == size_route){
-            i = -1;
-            rutaParcial.push_back(0);
-            valorParcial.push_back(matrix[elemento][0]);
-            std::cout << "La mejor ruta es: " << std::endl;
-            for(int n = 0; n < size_route + 1; n++){
-
-                std::cout << rutaParcial[n] << " --> ";
-                std::cout << valorParcial[n] << std::endl;
-                rutafinal.push_back(rutaParcial[n]);
-                distancia += valorParcial[n];
-            }
-            std::cout << std::endl;
-            std::cout << "Distancia ruta: " << distancia << std::endl;
-            rutaParcial.clear();
-            valorParcial.clear();
-            distanciaTotal += distancia;
-            distancia = 0;
-            contador = 0;
-            contruta++;
-            if (contruta == vehicles){
-            std::cout << std::endl;
-            std::cout << "Distancia total: " << distanciaTotal << std::endl;
-            std::cout << " --------------" << std::endl;
-            for(int z = 0; z < rutafinal.size(); z++){
-                std::cout << rutafinal[z] << "\t";
-            }
-            if(mejorDistancia > distanciaTotal){
-              mejorDistancia = distanciaTotal;
-              distanciaTotal = 0;
-              rutaSolucion = rutafinal;
-              rutafinal.clear();
-              contadorNoImprove = 0;
-            }else{
-              contadorNoImprove++;
-            }
-            std::cout << std::endl;
-            std::cout << "Mejor Distancia Final: " <<std::endl << mejorDistancia << std::endl;
-            std::cout << " --------------" << std::endl;
-            std::cout << "Mejor Ruta Final: " << std::endl;
-            std::cout << " --------------" << std::endl;
-            for(int c = 0; c < rutaSolucion.size(); c++){
-                std::cout << rutaSolucion[c] << "\t";
-            }
-
-                std::cout << std::endl;
-                matrix.clear();
-                contadorIteraciones++;
-                contruta = 0;
-                break;
-            }
-        }    
-}
-}
-}
-
-
-void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC){
-
-std::vector<int> matrix = fila;
-
-int elemento;
-for(int z = 0; z < size_RLC ; z++){
-int minimo = 999999;
-for (int i = 1; i < matrix.size(); i++){
-    if(minimo > matrix[i] && matrix[i] !=0){
-      minimo = matrix[i];
-      elemento = i;
+    matrix[elemento] = 0;
+    if (RLCR.size() < size_RLC) {
+      RLCR.push_back(elemento);
+      RLCV.push_back(minimo);
     }
-}
-matrix[elemento] = 0;
-if(RLCR.size() < size_RLC){
-  RLCR.push_back(elemento);
-  RLCV.push_back(minimo);
   }
+
+  int ind = rand() % RLCR.size();//no hace nada no?
+
+  //std::cout << "RLC: ";
+  //for(int j = 0; j < RLCR.size(); j++){
+    //std::cout << RLCR[j] << " ";
+  //}
+  //std::cout << std::endl;
+  //std::cout << ind << std::endl;
+  //std::cout << RLCV[ind] << std::endl;
 }
-
-//std::cout << "RLC: ";
-//for(int j = 0; j < RLCR.size(); j++){
-  //std::cout << RLCR[j] << " ";
-//}
-//std::cout << std::endl;
-
-
-int ind = rand()%RLCR.size();
-//std::cout << ind << std::endl;
-//std::cout << RLCV[ind] << std::endl;
-}
-
 
 #endif
