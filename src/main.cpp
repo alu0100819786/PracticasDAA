@@ -224,7 +224,7 @@ void Greedy(int customers, int vehicles ,std::vector<std::vector<int> > matriz) 
       }
     }
 
-    std::cout << "El menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matriz[i][elemento] << std::endl;
+    //std::cout << "El menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matriz[i][elemento] << std::endl;
     valorParcial.push_back(matriz[i][elemento]);
     rutaParcial.push_back(elemento);
     for (int j = 0; j < matriz.size(); j++) {
@@ -235,7 +235,7 @@ void Greedy(int customers, int vehicles ,std::vector<std::vector<int> > matriz) 
     i = elemento - 1;
     contador++;//
 
-    std::cout << std::endl;
+    //std::cout << std::endl;
     /*for (int j = 0; j < matriz.size(); j++) {
       for (int k = 0; k < matriz.size(); k++) {
         std::cout << matriz[j][k] << " ";
@@ -320,7 +320,7 @@ void Grasp(int customers, int vehicles ,std::vector<std::vector<int> > matriz){
         }
       }
       
-      std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matrix[i][elemento] << std::endl;
+      //std::cout << "el menor elemento en la fila: " << i << ", es el: " << elemento << ", con valor: " << matrix[i][elemento] << std::endl;
       valorParcial.push_back(matrix[i][elemento]);
       rutaParcial.push_back(elemento);
       for (int j = 0; j <matrix.size(); j++){
