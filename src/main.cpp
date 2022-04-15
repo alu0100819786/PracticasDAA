@@ -82,11 +82,19 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  //long start, end, total;
+
   if (isGreedy()) {
+    //start = getCurrentTime();
     Greedy(n_customers, n_vehicles, matrix);
+    //end = getCurrentTime();
   } else {
+    //start = getCurrentTime();
     Grasp(n_customers, n_vehicles, matrix);
+    //end = getCurrentTime();
   }
+
+  //total = end - start;
 };
 
 void help() {
@@ -195,11 +203,8 @@ void Greedy(int customers, int vehicles ,std::vector<std::vector<int> > matriz) 
     }
     std::cout << std::endl;
   }*/
-
-
-  std::cout << std::endl << "ProblemSize\t\tDistanciaTotalRecorrida\t\tCPUTime" << std::endl;
+std::cout << std::endl << "ProblemSize\t\tDistanciaTotalRecorrida\t\tCPUTime" << std::endl;
 	std::cout << "___________________________________________________________________" << std::endl;
-
   int contruta = 0;
   int contador = 0;//Quizas se puede quitar y reemplazar por el tamaño del vector ruta parcial
   int distanciaTotal = 0;
@@ -246,13 +251,13 @@ void Greedy(int customers, int vehicles ,std::vector<std::vector<int> > matriz) 
       valorParcial.push_back(matriz[elemento][0]);
 
       int distancia = 0;
-      std::cout << "La mejor ruta es: " << std::endl;
+      //std::cout << "La mejor ruta es: " << std::endl;
       for (int j = 0; j < size_route + 1; j++) {
-        std::cout << rutaParcial[j] << " --> " << valorParcial[j] << std::endl;
+        //std::cout << rutaParcial[j] << " --> " << valorParcial[j] << std::endl;
         rutafinal.push_back(rutaParcial[j]);
         distancia += valorParcial[j];
       }
-      std::cout << std::endl << "Distancia ruta: " << distancia << std::endl;
+      //std::cout << std::endl << "Distancia ruta: " << distancia << std::endl;
 
       contruta++;
       rutaParcial.clear();
@@ -262,13 +267,16 @@ void Greedy(int customers, int vehicles ,std::vector<std::vector<int> > matriz) 
       contador = 0;//
 
       if (contruta == vehicles) {
-        /*std::cout << std::endl << "Distancia total: " << distanciaTotal << std::endl << " --------------" << std::endl << "Ruta: ";
+        //std::cout << std::endl << "Distancia total: " << distanciaTotal << std::endl << " --------------" << std::endl << "Ruta: ";
+        std::cout << std::endl;
+        long totalTime = getCurrentTime() - start;
+        std::cout << matriz.size() - 1 << "\t\t\t\t" << distanciaTotal << "\t\t\t" << totalTime << std::endl;
+        std::cout << "---------------------------------------------------------------" << std::endl;
+        std::cout << "Mejor Ruta: " << std::endl;
         for (int j = 0; j < rutafinal.size(); j++){
           std::cout << rutafinal[j] << " ";
         }
-        std::cout << std::endl;*/
-        long totalTime = getCurrentTime() - start;
-        std::cout << matriz.size() - 1 << "\t\t\t\t" << distanciaTotal << "\t\t\t" << totalTime << std::endl;
+        std::cout << std::endl;
         exit(0);
       }
     }
@@ -360,10 +368,9 @@ void Grasp(int customers, int vehicles ,std::vector<std::vector<int> > matriz){
           for (int j = 0; j < rutafinal.size(); j++) {
             std::cout << rutafinal[j] << "\t";
           }*/
-
           long totalTime = getCurrentTime() - start;
           std::cout << matriz.size() - 1 << "\t\t\t" << RLCSize << "\t\t" << contadorIteraciones + 1 << "\t\t\t\t" << distanciaTotal << "\t\t\t" << totalTime << std::endl;
-
+          //std::cout << distanciaTotal << " " << mejorDistancia<< std::endl;
           if (mejorDistancia > distanciaTotal) {
             mejorDistancia = distanciaTotal;
             rutaSolucion = rutafinal;
@@ -372,8 +379,8 @@ void Grasp(int customers, int vehicles ,std::vector<std::vector<int> > matriz){
             rutafinal.clear();
           } else {
             contadorNoImprove++;
+            distanciaTotal = 0;
           }
-
           contadorIteraciones++;
           matrix.clear();
           contruta = 0;
@@ -382,12 +389,13 @@ void Grasp(int customers, int vehicles ,std::vector<std::vector<int> > matriz){
       }
     }
   }
-  /*std::cout << std::endl << "Mejor Distancia Final: " << mejorDistancia << std::endl << " --------------";//Lo pongo por fuera del while para que cuando acabe muertre la mejor solo 1 vez
+  std::cout << std::endl << "--------------------------------------------------------------------------------" << std::endl;
+  std::cout << std::endl << "Mejor Distancia Final: " << mejorDistancia << std::endl << " --------------";//Lo pongo por fuera del while para que cuando acabe muertre la mejor solo 1 vez
   std::cout << std::endl << "Mejor Ruta Final: " ;
   for (int i = 0; i < rutaSolucion.size(); i++) {
     std::cout << rutaSolucion[i] << " ";
   }
-  std::cout << std::endl;*/
+  std::cout << std::endl;
 }
 
 void generateRLC(std::vector<int>& RLCR, std::vector<int>& RLCV, std::vector<int> fila, int size_RLC) {
